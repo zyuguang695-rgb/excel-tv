@@ -19,8 +19,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-/* 唯一需要改的地方：把 mytable.xlsx 换成你上传的文件名 */
-const EXCEL_FILE = 'mytable.xlsx';
+const EXCEL_FILE = '中标进度表.xlsx';
 const SHEET_INDEX = 0;      // 第 1 个工作表
 const REFRESH_SEC = 30;     // 自动刷新秒数，0=不刷新
 
@@ -48,4 +47,5 @@ loadExcel();
 if(REFRESH_SEC>0) setInterval(loadExcel,REFRESH_SEC*1000);
 </script>
 </body>
+
 </html>
