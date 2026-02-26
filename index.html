@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<title>Excel 大屏</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+    html,body{margin:0;padding:0;height:100%;background:#111;font-family:Arial,Helvetica,sans-serif}
+    #tableWrap{height:100%;overflow:auto;background:#fff}
+    table{border-collapse:collapse;width:100%}
+    td,th{padding:4px 6px;border:1px solid #ccc;font-size:1.4vw;text-align:center;white-space:nowrap}
+    th{background:#f2f2f2;position:sticky;top:0;z-index:1}
+    #fullscreen{position:fixed;top:10px;right:10px;z-index:999;padding:6px 12px;background:#000;color:#fff;border:none;border-radius:4px;cursor:pointer}
+</style>
+</head>
+<body>
+<button id="fullscreen" onclick="toggleFullScreen()">全屏</button>
+<div id="tableWrap">加载中…</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* 唯一需要改的地方：把 mytable.xlsx 换成你上传的文件名 */
+const EXCEL_FILE = 'mytable.xlsx';
+const SHEET_INDEX = 0;      // 第 1 个工作表
+const REFRESH_SEC = 30;     // 自动刷新秒数，0=不刷新
+
+function toggleFullScreen(){
+    if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen().catch(e=>{});
+    }else{
+        document.exitFullscreen();
+    }
+}
+function loadExcel(){
+    fetch(EXCEL_FILE+'?t='+Date.now())
+      .then(res=>res.arrayBuffer())
+      .then(ab=>{
+          const wb = XLSX.read(ab,{type:'array'});
+          const ws = wb.Sheets[wb.SheetNames[SHEET_INDEX]];
+          const html = XLSX.utils.sheet_to_html(ws,{id:'excelTable'});
+          document.getElementById('tableWrap').innerHTML = html;
+      })
+      .catch(err=>{
+          document.getElementById('tableWrap').innerHTML='<p style="color:red">读取失败：'+err+'</p>';
+      });
+}
+loadExcel();
+if(REFRESH_SEC>0) setInterval(loadExcel,REFRESH_SEC*1000);
+</script>
+</body>
+</html>
